@@ -2,7 +2,7 @@
 > FreeIPA
 > Nextcloud
 > MariaDB "mysql"
-# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
 
 
 ### 1- Install Docker-compose ✨ 
@@ -20,7 +20,7 @@ $ sudo chmod +x /usr/local/bin/docker-compose
 $ docker-compose --version
 docker-compose version 1.27.3, build 1110ad01
 ```
-# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
 
 ### 1- Create freeipa Container as below ✨ 
 - define your version of your docker-compose file :
@@ -120,7 +120,7 @@ depends_on:
 networks:
     - nextcloud_network
 ```
-# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
 
 ### 2- Create Nextcloud Container as below ✨ 
 
@@ -169,7 +169,7 @@ networks:
         depends_on:
             - db
 ```
-# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
 
 ### 3- Create Maria-DB "mysql" Database Container as below ✨ 
 - define the service name `db` , Image name `mariadb` , Container name `nextcloud-mariadb`, network card name `nextcloud_network`.
@@ -209,7 +209,8 @@ volumes:
 networks:
     nextcloud_network:
 ```
-# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+
 Edit your hosts file if you don't have DNS server, and add this lines , your local IP or your localHost with your hostname for Freeipa , Nextcloud.
 
 ![hosts](https://i.ibb.co/dDzm8HL/hosts.png)
@@ -223,7 +224,7 @@ if you want to show the logs , run this command
 docker-compose logs -f
 ```
 - wait for freeipa finishing the Installation and configuration.
-# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
 
 - Configure Nextcloud application for start and Integration
 - open `browser` and go to `http://cloud.ldap.local:8080`
@@ -255,7 +256,8 @@ docker-compose logs -f
 ![Image14](https://i.ibb.co/VVBRHCV/nc14.png)
 
 
-# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+
 - Login to LDAP Server and testing for adding user and go back to nextcloud to join by the same user.
 - open `browser` and go to `http://ipa.ldap.local`
 - user name `admin` password `UltraS3cure`
@@ -266,7 +268,7 @@ docker-compose logs -f
 
 ![Image17](https://i.ibb.co/n3KvD56/ldap17.png)
 
-# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
 
 - go back to nextcloud for test the `hakim` user.
 
@@ -278,6 +280,9 @@ docker-compose logs -f
 
 ![Image21](https://i.ibb.co/MSq0jjS/nc21.png)
 
+# ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+
+- Done :) 
 
 
 
@@ -299,4 +304,3 @@ docker-compose logs -f
 
 
 
-docker network rm $(docker network ls -q) && docker volume rm $(docker volume ls -q)
