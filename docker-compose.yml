@@ -1,104 +1,102 @@
 version: "3.7"
 services:
-    freeipa:
-        image: freeipa/freeipa-server:centos-8
-        restart: always
-        hostname: ipa.ldap.local
-        environment:
-          - IPA_SERVER_HOSTNAME=ipa.ldap.local
-        tty: true
-        stdin_open: true
-        cap_add:
-          - NET_ADMIN
-        volumes:
-          - /sys/fs/cgroup:/sys/fs/cgroup:ro
-          - datafreeipa:/data
-        sysctls:
-          - net.ipv6.conf.lo.disable_ipv6=0
-          - net.ipv6.conf.all.disable_ipv6=0
-        security_opt:
-          - "seccomp:unconfined"
-        command:
-          - -U
-          - --domain=ldap.local
-          - --realm=ldap.local
-          - --http-pin=UltraS3cure
-          - --dirsrv-pin=UltraS3cure
-          - --ds-password=UltraS3cure
-          - --admin-password=UltraS3cure
-          - --no-host-dns
-          #- --no-dnssec-validation
-          #- --setup-dns
-          #- --auto-forwarders
-          #- --allow-zone-overlap
-          - --unattended
-        ports:
-          #- "53:53/udp"
-          #- "53:53"
-          - "80:80"
-          - "443:443"
-          - "389:389"
-          - "636:636"
-          - "88:88"
-          - "464:464"
-          - "88:88/udp"
-          - "464:464/udp"
-          - "123:123/udp"
-          - "7389:7389"
-          - "9443:9443"
-          - "9444:9444"
-          - "9445:9445"
+  freeipa:
+    image: freeipa/freeipa-server:centos-8
+    restart: unless-stopped
+    hostname: ipa.ldap.local
+    environment:
+      - IPA_SERVER_HOSTNAME=ipa.ldap.local
+    tty: true
+    stdin_open: true
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - datafreeipa:/data
+    sysctls:
+      - net.ipv6.conf.lo.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=0
+    security_opt:
+      - "seccomp:unconfined"
+    command:
+      - -U
+      - --domain=ldap.local
+      - --realm=ldap.local
+      - --http-pin=UltraS3cure
+      - --dirsrv-pin=UltraS3cure
+      - --ds-password=UltraS3cure
+      - --admin-password=UltraS3cure
+      - --no-host-dns
+      #- --no-dnssec-validation
+      #- --setup-dns
+      #- --auto-forwarders
+      #- --allow-zone-overlap
+      - --unattended
+    ports:
+      #- "53:53/udp"
+      #- "53:53"
+      - "80:80"
+      - "443:443"
+      - "389:389"
+      - "636:636"
+      - "88:88"
+      - "464:464"
+      - "88:88/udp"
+      - "464:464/udp"
+      - "123:123/udp"
+      - "7389:7389"
+      - "9443:9443"
+      - "9444:9444"
+      - "9445:9445"
+    depends_on:
+      - nextcloud
+    networks:
+      - nextcloud_network
 
-        depends_on:
-            - app
-        networks:
-            - nextcloud_network
-
-    
-    app:
-        image: nextcloud:latest
-        container_name: nextcloud-app
-        ports: 
-            - 8080:80
-        volumes:
-            - ./data/nextcloud:/var/www/html
-            - ./data/app/config:/var/www/html/config
-            - ./data/app/custom_apps:/var/www/html/custom_apps
-            - ./data/app/data:/var/www/html/data
-            - ./data/app/themes:/var/www/html/themes
-            - /etc/localtime:/etc/localtime:ro
-                        
-        environment:
-            - VIRTUAL_HOST=cloud.ldap.local
-            - LETSENCRYPT_HOST=cloud.ldap.local
-            - LETSENCRYPT_EMAIL=ahakim@wvb.com
-        restart: unless-stopped
-        networks:
-            - nextcloud_network
-        depends_on:
-            - db
+      
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud-app
+    ports: 
+        - 8080:80
+    volumes:
+        -  nextcloud:/var/www/html
+        - ./data/app/config:/var/www/html/config
+        - ./data/app/custom_apps:/var/www/html/custom_apps
+        - ./data/app/data:/var/www/html/data
+        - ./data/app/themes:/var/www/html/themes
+        - /etc/localtime:/etc/localtime:ro
+                    
+    environment:
+        - VIRTUAL_HOST=cloud.ldap.local
+        - LETSENCRYPT_HOST=cloud.ldap.local
+        - LETSENCRYPT_EMAIL=ahakim@wvb.com
+    restart: always
+    networks:
+        - nextcloud_network
+    depends_on:
+        - db
 
 
-    db:
-        image: mariadb
-        container_name: nextcloud-mariadb
-        networks:
-            - nextcloud_network
-        volumes:
-            - ./data/db:/var/lib/mysql
-            - /etc/localtime:/etc/localtime:ro
-        environment:
-            - MYSQL_ROOT_PASSWORD=toor
-            - MYSQL_PASSWORD=mysql
-            - MYSQL_DATABASE=nextcloud
-            - MYSQL_USER=nextcloud
-        restart: unless-stopped
-
+  db:
+    image: mariadb
+    container_name: nextcloud-mariadb
+    networks:
+        - nextcloud_network
+    volumes:
+        - ./data/db:/var/lib/mysql
+        - /etc/localtime:/etc/localtime:ro
+    environment:
+        - MYSQL_ROOT_PASSWORD=toor
+        - MYSQL_PASSWORD=mysql
+        - MYSQL_DATABASE=nextcloud
+        - MYSQL_USER=nextcloud
+    restart:  always 
 
 volumes:
-    nextcloud:
-    db:
-    datafreeipa:
+  nextcloud:
+  db:
+  datafreeipa:
           
 networks:
-    nextcloud_network:
+  nextcloud_network:
